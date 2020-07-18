@@ -1,0 +1,10 @@
+/app-config.xml
+/com/
+/configuracionConexionBaseDatos.properties
+/configuracionSVNScriptsBaseInicial.properties
+/errors/
+/flagScriptsSQL.properties
+/messages/
+/org/
+/proyectoMybatisConfiguration.xml
+/scriptsProceso/

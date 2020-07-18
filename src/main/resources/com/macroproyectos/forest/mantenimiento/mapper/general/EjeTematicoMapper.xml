@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.macroproyectos.forest.mantenimiento.mapper.general.EjeTematicoMapper">
+
+	 <select id="consultarEjeTematico" resultMap="EjeTematicoResult" flushCache="true" useCache="false">	
+	   SELECT eje.id, eje.nombre, eje.estado, eje.codigo
+       FROM ${esquemaGrl}.eje_tematico eje
+       <where>
+           <if test="id != null">
+				eje.id = #{id}
+		   </if>	
+		   <if test="idDependencia != null">			
+				AND EXISTS (SELECT 1 FROM ${esquemaGrl}.rel_eje_tem_organ rel 
+                            WHERE rel.id_ejetematico = eje.id AND rel.id_organismo = #{idDependencia})
+		   </if>				
+			<if test="descripcion != null">
+				<bind name="pattern" value="'%' + descripcion + '%'" />
+				AND LOWER(eje.nombre) LIKE LOWER(#{pattern})
+			</if>
+            <if test="activo != null">
+				AND eje.estado = #{activo}
+			</if>		       
+       </where>		       
+       ORDER BY eje.nombre
+	 </select>
+	 
+	 <select id="consultarEjeTematicoDuplicado" resultMap="EjeTematicoResult" flushCache="true" useCache="false">
+	   SELECT eje.id, eje.nombre, eje.estado
+       FROM ${esquemaGrl}.eje_tematico eje
+       WHERE LOWER(eje.nombre) = LOWER(#{descripcion})    
+	    <if test="id != null">
+		  AND  eje.id != #{id}
+	   </if>
+	 </select>
+	 	
+    <resultMap id="EjeTematicoResult" type="com.macroproyectos.forest.mantenimiento.dto.corr.EjeTematico">
+        <id property="id" column="id" jdbcType="NUMERIC"/>
+        <result property="descripcion" column="nombre" jdbcType="VARCHAR"/>        
+        <result property="activo" column="estado" jdbcType="NUMERIC"/>
+        <result property="codigo" column="codigo" jdbcType="VARCHAR"/>      
+    </resultMap> 	
+    
+     <select id="consultarSecuencia" resultType="long">
+	   SELECT CORR.EJE_TEMATICO_CODIGO_SEQ.NEXTVAL FROM DUAL
+	 </select>
+        
+</mapper>	
